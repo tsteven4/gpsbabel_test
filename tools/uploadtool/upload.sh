@@ -35,15 +35,18 @@ if [ ! -z "$UPLOADTOOL_SUFFIX" ] ; then
     RELEASE_NAME=$TRAVIS_TAG
     RELEASE_TITLE="Release build ($TRAVIS_TAG)"
     is_prerelease="false"
+    is_draft="true"
   else
     RELEASE_NAME="continuous-$UPLOADTOOL_SUFFIX"
     RELEASE_TITLE="Continuous build ($UPLOADTOOL_SUFFIX)"
     is_prerelease="true"
+    is_draft="false"
   fi
 else
   RELEASE_NAME="continuous" # Do not use "latest" as it is reserved by GitHub
   RELEASE_TITLE="Continuous build"
   is_prerelease="true"
+  is_draft="false"
 fi
 
 if [ "$TRAVIS_EVENT_TYPE" == "pull_request" ] ; then
@@ -152,7 +155,7 @@ if [ "$TRAVIS_COMMIT" != "$target_commit_sha" ] ; then
   if [ ! -z "$TRAVIS_JOB_ID" ] ; then
     if [ -z "${UPLOADTOOL_BODY+x}" ] ; then
       # TODO: The host could be travis-ci.org (legacy open source) or travis-ci.com (subscription or latest open source).
-      BODY="Travis CI build log: https://travis-ci.org/$REPO_SLUG/builds/$TRAVIS_BUILD_ID/"
+      BODY="Travis CI build log: ${TRAVIS_BUILD_WEB_URL}"
     else
       BODY="$UPLOADTOOL_BODY"
     fi
@@ -161,7 +164,7 @@ if [ "$TRAVIS_COMMIT" != "$target_commit_sha" ] ; then
   fi
 
   release_infos=$(curl -H "Authorization: token ${GITHUB_TOKEN}" \
-       --data '{"tag_name": "'"$RELEASE_NAME"'","target_commitish": "'"$TRAVIS_COMMIT"'","name": "'"$RELEASE_TITLE"'","body": "'"$BODY"'","draft": false,"prerelease": '$is_prerelease'}' "https://api.github.com/repos/$REPO_SLUG/releases")
+       --data '{"tag_name": "'"$RELEASE_NAME"'","target_commitish": "'"$TRAVIS_COMMIT"'","name": "'"$RELEASE_TITLE"'","body": "'"$BODY"'","draft": '$is_draft',"prerelease": '$is_prerelease'}' "https://api.github.com/repos/$REPO_SLUG/releases")
 
   echo "$release_infos"
 
@@ -195,7 +198,7 @@ done
 
 $shatool "$@"
 
-if [ "$TRAVIS_COMMIT" != "$tag_sha" ] ; then
+if [ "$TRAVIS_COMMIT" != "$tag_sha" ] && [ "$is_draft" == "false" ]; then
   echo "Publish the release..."
 
   release_infos=$(curl -H "Authorization: token ${GITHUB_TOKEN}" \
