@@ -1,12 +1,11 @@
 version: 1.0.{build}
 
+# the except doesn't work with tags as of 5/1/2019, this is a bug.
 branches:
   except:
     - /continuous.*/
     - continuous-windows
     - continuous
-    - notthistag
-    - notthisbranch
 
 # msvc arch decode is host_target
 
@@ -37,6 +36,13 @@ init:
   - set PATH=C:\Qt\%qt%\bin;%PATH%
   - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2015" call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" %arch%
   - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" %arch%
+
+before_build:
+  - ps: |
+    if (($env:APPVEYOR_REPO_TAG -eq "true") -and ($env:APPVEYOR_REPO_TAG_NAME -match "^continuous"))
+    {
+      Write-Error "This job should have been filtered out (tag name: $($env:APPVEYOR_REPO_TAG_NAME)!"
+    }
 
 build_script:
   - ps: |
@@ -91,7 +97,7 @@ deploy_script:
           C:\msys64\usr\bin\bash.exe -lc "cd $env:projdir; ./tools/uploadtool/upload_appveyor.sh GPSBabel-$($verid)-Setup.exe"
           Write-Host "Finished continuous release $($verid)" 
         }
-        elseif ($env:APPVEYOR_REPO_TAG -eq "true")
+        elseif ($env:APPVEYOR_REPO_TAG -eq "true") -and ($env:APPVEYOR_REPO_TAG_NAME -notmatch "^continuous"))
         {
           C:\msys64\usr\bin\bash.exe -lc "cd $env:projdir; ls ./gui/release/*.exe"
           C:\msys64\usr\bin\bash.exe -lc "cd $env:projdir; cp -p ./gui/release/GPSBabel-*-Setup.exe GPSBabel-$($env:APPVEYOR_REPO_TAG_NAME)-Setup.exe"
