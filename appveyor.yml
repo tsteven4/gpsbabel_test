@@ -5,6 +5,8 @@ branches:
     - /continuous.*/
     - continuous-windows
     - continuous
+    - notthistag
+    - notthisbranch
 
 # msvc arch decode is host_target
 
