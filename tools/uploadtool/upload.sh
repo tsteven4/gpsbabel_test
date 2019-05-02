@@ -155,7 +155,7 @@ if [ "$TRAVIS_COMMIT" != "$target_commit_sha" ] ; then
   if [ ! -z "$TRAVIS_JOB_ID" ] ; then
     if [ -z "${UPLOADTOOL_BODY+x}" ] ; then
       # TODO: The host could be travis-ci.org (legacy open source) or travis-ci.com (subscription or latest open source).
-      BODY="Travis CI build log: ${TRAVIS_JOB_WEB_URL}"
+      BODY="Travis CI build log: ${TRAVIS_BUILD_WEB_URL}"
     else
       BODY="$UPLOADTOOL_BODY"
     fi
