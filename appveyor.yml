@@ -3,6 +3,8 @@ version: 1.0.{build}
 branches:
   except:
     - /continuous.*/
+    - continuous-windows
+    - continuous
 
 # msvc arch decode is host_target
 
@@ -37,6 +39,7 @@ init:
 build_script:
   - ps: |
       # be aware that vcvarsall will reset platform amd64 to X64!
+      echo "tag: $env:APPVEYOR_REPO_TAG tag_name: $env:APPVEYOR_REPO_TAG_NAME"
       echo "arch: $env:arch"
       echo "qt: $env:qt"
       qmake -query
