@@ -32,18 +32,21 @@ fi
 # If this build was triggered by a tag, call the result a Release
 if [ ! -z "$UPLOADTOOL_SUFFIX" ] ; then
   if [ "$UPLOADTOOL_SUFFIX" = "$APPVEYOR_REPO_TAG_NAME" ] ; then
-    RELEASE_NAME=$APPVEYOR_REPO_TAG_NAME
+    RELEASE_NAME="${APPVEYOR_REPO_TAG_NAME}"
     RELEASE_TITLE="Release build ($APPVEYOR_REPO_TAG_NAME)"
     is_prerelease="false"
+    is_draft="true"
   else
     RELEASE_NAME="continuous-$UPLOADTOOL_SUFFIX"
     RELEASE_TITLE="Continuous build ($UPLOADTOOL_SUFFIX)"
     is_prerelease="true"
+    is_draft="false"
   fi
 else
   RELEASE_NAME="continuous-windows" # Do not use "latest" as it is reserved by GitHub
   RELEASE_TITLE="Continuous build"
   is_prerelease="true"
+  is_draft="false"
 fi
 
 #if [ "$TRAVIS_EVENT_TYPE" == "pull_request" ] ; then
@@ -172,7 +175,7 @@ if [ "$APPVEYOR_REPO_COMMIT" != "$target_commit_sha" ] ; then
   fi
 
   release_infos=$(curl -s -S -H "Authorization: token ${GITHUB_TOKEN}" \
-       --data '{"tag_name": "'"$RELEASE_NAME"'","target_commitish": "'"$APPVEYOR_REPO_COMMIT"'","name": "'"$RELEASE_TITLE"'","body": "'"$BODY"'","draft": false,"prerelease": '$is_prerelease'}' "https://api.github.com/repos/$REPO_SLUG/releases")
+       --data '{"tag_name": "'"$RELEASE_NAME"'","target_commitish": "'"$APPVEYOR_REPO_COMMIT"'","name": "'"$RELEASE_TITLE"'","body": "'"$BODY"'","draft": '$is_draft',"prerelease": '$is_prerelease'}' "https://api.github.com/repos/$REPO_SLUG/releases")
 
   echo "$release_infos"
 
@@ -206,7 +209,7 @@ done
 
 $shatool "$@"
 
-if [ "$APPVEYOR_REPO_COMMIT" != "$tag_sha" ] ; then
+if [ "$APPVEYOR_REPO_COMMIT" != "$tag_sha" ] && [ "$is_draft" == "false" ]; then
   echo "Publish the release..."
 
   release_infos=$(curl -s -S -H "Authorization: token ${GITHUB_TOKEN}" \
