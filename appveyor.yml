@@ -1,5 +1,9 @@
 version: 1.0.{build}
 
+branches:
+  except:
+    - /continuous.*/
+
 # msvc arch decode is host_target
 
 environment:
@@ -108,9 +112,4 @@ deploy_script:
 #    qt: 5.9\msvc2015
 
 #skip_tags: true
-
-branches:
-  except:
-    - continuous
-    - continuous-windows
 
