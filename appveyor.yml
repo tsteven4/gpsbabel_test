@@ -82,11 +82,11 @@ deploy_script:
           C:\msys64\usr\bin\bash.exe -lc "cd $env:projdir; ./tools/uploadtool/upload_appveyor.sh GPSBabel-$($verid)-Setup.exe"
           Write-Host "Finished continuous release $($verid)" 
         }
-        elseif (($env:APPVEYOR_REPO_TAG -eq "true") -and ($env:APPVEYOR_REPO_TAG_NAME -notmatch "^continuous"))
+        elseif ($env:APPVEYOR_REPO_TAG -eq "true")
         {
           C:\msys64\usr\bin\bash.exe -lc "cd $env:projdir; ls ./gui/release/*.exe"
           C:\msys64\usr\bin\bash.exe -lc "cd $env:projdir; cp -p ./gui/release/GPSBabel-*-Setup.exe GPSBabel-$($env:APPVEYOR_REPO_TAG_NAME)-Setup.exe"
-          C:\msys64\usr\bin\bash.exe -lc "cd $env:projdir; UPLOADTOOL_SUFFIX=$($APPVEYOR_REPO_TAG_NAME) ./tools/uploadtool/upload_appveyor.sh GPSBabel-$($env:APPVEYOR_REPO_TAG_NAME)-Setup.exe"
+          C:\msys64\usr\bin\bash.exe -lc "cd $env:projdir; UPLOADTOOL_SUFFIX=$($env:APPVEYOR_REPO_TAG_NAME) ./tools/uploadtool/upload_appveyor.sh GPSBabel-$($env:APPVEYOR_REPO_TAG_NAME)-Setup.exe"
           Write-Host "Finished tag release $($env:APPVEYOR_REPO_TAG_NAME) using $($verid)"
         }
       }
@@ -109,3 +109,6 @@ deploy_script:
 
 #skip_tags: true
 
+branches:
+  except:
+    - /^continuous/
