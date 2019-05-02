@@ -111,4 +111,6 @@ deploy_script:
 
 branches:
   except:
-    - /^continuous/
+    - continuous
+    - continuous-windows
+
