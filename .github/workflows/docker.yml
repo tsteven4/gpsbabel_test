@@ -19,10 +19,10 @@ jobs:
       - name: check version
         id: check-version
         run: |
-          if [[ "${{ matrix.version }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            dashversion=echo gpsbabel_${{ matrix.tag_name }} | sed -e 's/\./_/g'
-          elif [ "${{ matrix.tag_name }}" == "dev" ]; then
-            dashversion="${{ matrix.version }}"
+          if [[ "${{ inputs.version }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            dashversion=echo gpsbabel_${{ inputs.version }} | sed -e 's/\./_/g'
+          elif [ "${{ inputs.version }}" == "dev" ]; then
+            dashversion="${{ inputs.version }}"
           else
             echo "version must be of the form "^[0-9]+\.[0-9]+\.[0-9]+$" or "dev".
             exit 1
