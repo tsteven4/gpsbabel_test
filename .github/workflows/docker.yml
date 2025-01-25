@@ -24,7 +24,7 @@ jobs:
           elif [ "${{ inputs.version }}" == "dev" ]; then
             dashversion="${{ inputs.version }}"
           else
-            echo "version must be of the form "^[0-9]+\.[0-9]+\.[0-9]+$" or "dev".
+            echo "version must be of the form \"^[0-9]+\.[0-9]+\.[0-9]+$\" or \"dev\"."
             exit 1
           fi
           echo "dashversion=$dashversion" >> "$GITHUB_OUTPUT"
