@@ -16,29 +16,12 @@ jobs:
       matrix:
         os: [ubuntu-latest, ubuntu-24.04-arm]
     steps:
-      - name: check version
-        id: check-version
-        run: |
-          if [[ "${{ inputs.version }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            dashversion=$(echo ${{ inputs.version }} | sed -e 's/\./_/g')
-          elif [ "${{ inputs.version }}" == "dev" ]; then
-            dashversion="${{ inputs.version }}"
-          else
-            echo "version must be of the form \"^[0-9]+\.[0-9]+\.[0-9]+$\" or \"dev\"."
-            exit 1
-          fi
-          echo "dashversion=$dashversion" >> "$GITHUB_OUTPUT"
-      - name: usetag
-        env:
-          dashversion: ${{ steps.check-version.outputs.dashversion }}
-        run: |
-          echo $dashversion
-#      - name: Login to Docker Hub
-#        uses: docker/login-action@v3
-#        with:
-#          username: tsteven4
-#          password: ${{ secrets.DOCKERHUB_TOKEN }}
-#
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -46,6 +29,6 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: "{{defaultContext}}:tools/archive_images"
-          file: "Dockerfile_gpsbabel_${{ inputs.version}}"
+          file: "Dockerfile_gpsbabel_${{ inputs.version }}"
           push: false
-          tags: tsteven4/gpsbabel:${{ inputs.version }}
+          tags: ${{ vars.DOCKERHUB_USERNAME }}/gpsbabel:${{ inputs.version }}
