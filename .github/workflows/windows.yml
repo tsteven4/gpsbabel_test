@@ -129,6 +129,18 @@ jobs:
           .\tools\ci_windows_cross_compile.ps1 @hash
         }
 
+    - name: Build Cross Compiled
+      shell: powershell
+      if: matrix.CROSS_COMPILED != ''
+      run: |
+        $hash = @{}
+        $hash["qt_root_dir"] = "$Home\Cache\Qt\${{ matrix.QT_VERSION }}"
+        $hash["host_arch"] = "${{ matrix.HOST_ARCH }}"
+        $hash["target_arch"] = "${{ matrix.TARGET_ARCH }}"
+        $hash["compiler"] = "${{ matrix.COMPILER }}"
+        $hash["cross_compiler"] = "${{ matrix.CROSS_COMPILER }}"
+        .\tools\ci_arm64_cross.ps1 @hash
+
     - name: Rename
       shell: bash
       run: |
