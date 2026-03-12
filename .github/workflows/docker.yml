@@ -58,17 +58,17 @@ jobs:
           docker exec -u "$(id -u):$(id -g)" -w /home/gpsbabel/gpsbabel-build -e PNAME=/usr/local/bin/gpsbabel "${container}" ./testo
         fi
     - name: Docker Metadata
-        id: meta
-        uses: docker/metadata-action@v6
-        with:
-          flavor: |
-            latest=false
-          images: |
-            ${{ env.docker_repository }}
-          tags: |
-            type=raw,value=${{ inputs.version }}
-            type=raw,value={{date 'YYYYMMDD[T]HHmmss[Z]' tz='UTC'}}
-            type=raw,value=latest,enable=${{ inputs.latest }}
+      id: meta
+      uses: docker/metadata-action@v6
+      with:
+        flavor: |
+          latest=false
+        images: |
+          ${{ env.docker_repository }}
+        tags: |
+          type=raw,value=${{ inputs.version }}
+          type=raw,value={{date 'YYYYMMDD[T]HHmmss[Z]' tz='UTC'}}
+          type=raw,value=latest,enable=${{ inputs.latest }}
     - name: Build and push
       uses: docker/build-push-action@v7
       with:
